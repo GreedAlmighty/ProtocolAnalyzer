@@ -25,10 +25,19 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    tcpip.cpp \
+    resultsmonitor.cpp \
+    scoreboard.cpp \
+    networksettingsdialog.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    tcpip.h \
+    resultsmonitor.h \
+    scoreboard.h \
+    networksettingsdialog.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    networksettingsdialog.ui
