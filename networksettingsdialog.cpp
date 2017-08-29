@@ -44,6 +44,7 @@ void NetworkSettingsDialog::on_acceptNetworkButton_clicked()
     emit updateLog( "Subnetmask is now: " + ui->submaskLineEdit->text() );
     emit newPortNumber( ui->portLineEdit->text() );
     emit updateLog( "Portnumber is now: " + ui->portLineEdit->text() );
+    emit processedAllChanges();
 }
 
 void NetworkSettingsDialog::on_cancelNetworkButton_clicked()
