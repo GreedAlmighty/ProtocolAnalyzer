@@ -1,11 +1,15 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "networksettingsdialog.h"
+#include "networksettings.h"
 #include <QDebug>
+#include <QThread>
 #include <QMessageBox>
 
-bool protocolActivated = false; //used to see whether a protocol is already activated
-qint8 selected_protocol_index = 0; //used to verify the selected protocol
+bool protocolActivated = false;         //used to see whether a protocol is already activated
+qint8 selected_protocol_index = 0;      //used to verify the selected protocol
+QThread protocolThread;                 //Thread used for receiving and transmitting data
+NetworkSettings settings_pointer;
 
 //need to use QTCPServer for Timing and Scoring
 //need to use QTCPSocket for Orbits protocols
@@ -38,23 +42,23 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_protocolAlreadyActivatedDialog()
-{
-    QMessageBox mErrorBox;
-
-    mErrorBox.setWindowTitle("ERROR");
-    mErrorBox.setText("Protocol Already Activated!");
-    mErrorBox.addButton(QMessageBox::Ok);
-
-    mErrorBox.exec();
-}
-
 void MainWindow::show_noProtocolActivatedDialog()
 {
     QMessageBox mErrorBox;
 
     mErrorBox.setWindowTitle("ERROR");
     mErrorBox.setText("Please activate a Protocol first!");
+    mErrorBox.addButton(QMessageBox::Ok);
+
+    mErrorBox.exec();
+}
+
+void MainWindow::on_protocolAlreadyActivatedDialog()
+{
+    QMessageBox mErrorBox;
+
+    mErrorBox.setWindowTitle("ERROR");
+    mErrorBox.setText("Protocol Already Activated!");
     mErrorBox.addButton(QMessageBox::Ok);
 
     mErrorBox.exec();
@@ -123,24 +127,8 @@ void MainWindow::on_disableProtocolButton_clicked()
 
 void MainWindow::on_configureSettingsButton_clicked()
 {
-    if(!protocolActivated)
-    {
-        show_noProtocolActivatedDialog();
-        return;
-    }
-
-    QString ip_address = "192.168.0.1";
-    QString subnet_mask = "255.255.255.0";
-    QString port_number = "50000";
-
-    //ip_address = thread.retrieveIP();
-    //subnet_mask = thread.retrieveSubMask();
-    //port_number = thread.retrievePortNr();
-
-    NetworkSettingsDialog settingsDialog(this);
-    settingsDialog.setConfiguredSettings( ip_address, subnet_mask, port_number );
+    NetworkSettingsDialog settingsDialog(this, &settings_pointer);
     connect( &settingsDialog, SIGNAL(updateLog(QString)),
              this, SLOT(on_addTextToLog(QString)));
-
     settingsDialog.exec();
 }

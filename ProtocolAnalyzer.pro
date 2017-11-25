@@ -29,14 +29,16 @@ SOURCES += \
     tcpip.cpp \
     resultsmonitor.cpp \
     scoreboard.cpp \
-    networksettingsdialog.cpp
+    networksettingsdialog.cpp \
+    networksettings.cpp
 
 HEADERS += \
         mainwindow.h \
     tcpip.h \
     resultsmonitor.h \
     scoreboard.h \
-    networksettingsdialog.h
+    networksettingsdialog.h \
+    networksettings.h
 
 FORMS += \
         mainwindow.ui \

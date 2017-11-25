@@ -2,6 +2,7 @@
 #define NETWORKSETTINGSDIALOG_H
 
 #include <QDialog>
+#include "networksettings.h"
 
 namespace Ui {
 class NetworkSettingsDialog;
@@ -12,15 +13,13 @@ class NetworkSettingsDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit NetworkSettingsDialog(QWidget *parent = 0);
+    explicit NetworkSettingsDialog(QWidget *parent = 0, NetworkSettings *settings_parent = 0);
     ~NetworkSettingsDialog();
-    void setConfiguredSettings( QString ip, QString subnet, QString port);
+    void showConfiguredSettings();
 
 signals:
-    newIPAddress(QString);
-    newSubnetMask(QString);
-    newPortNumber(QString);
     processedAllChanges();
+    updateNetworkSettings(QString, QString, QString, QString, QString);
     updateLog(QString);
 
 private slots:

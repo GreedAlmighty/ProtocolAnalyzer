@@ -1,7 +1,10 @@
 #include "networksettingsdialog.h"
+#include "networksettings.h"
 #include "ui_networksettingsdialog.h"
 
-NetworkSettingsDialog::NetworkSettingsDialog(QWidget *parent) :
+NetworkSettings *settings;
+
+NetworkSettingsDialog::NetworkSettingsDialog(QWidget *parent, NetworkSettings *settings_parent) :
     QDialog(parent),
     ui(new Ui::NetworkSettingsDialog)
 {
@@ -14,7 +17,12 @@ NetworkSettingsDialog::NetworkSettingsDialog(QWidget *parent) :
     connect(this, SIGNAL(processedAllChanges()),
             this, SLOT(close()));
 
+    settings = settings_parent;
+
+    ui->passWordLineEdit->setEchoMode(QLineEdit::Password); //makes sure to not show the password
+
     setMasksForLineEdits();
+    showConfiguredSettings();
 }
 
 NetworkSettingsDialog::~NetworkSettingsDialog()
@@ -22,29 +30,41 @@ NetworkSettingsDialog::~NetworkSettingsDialog()
     delete ui;
 }
 
-void NetworkSettingsDialog::setConfiguredSettings( QString ip, QString subnet, QString port)
+void NetworkSettingsDialog::showConfiguredSettings()
 {
-    ui->ipaddressLineEdit->setText(ip);
-    ui->submaskLineEdit->setText(subnet);
-    ui->portLineEdit->setText(port);
+    ui->ipaddressLineEdit->setText( settings->getIpAddress() );
+    ui->submaskLineEdit->setText( settings->getSubnetMask() );
+    ui->portLineEdit->setText( settings->getPortNumber() );
+    ui->userNameLineEdit->setText( settings->getUsername() );
+    ui->passWordLineEdit->setText( settings->getPassword() );
 }
 
 void NetworkSettingsDialog::setMasksForLineEdits()
 {
     ui->ipaddressLineEdit->setInputMask("000.000.000.000");
     ui->submaskLineEdit->setInputMask("000.000.000.000");
-    ui->portLineEdit->setInputMask("00000");
 }
 
 void NetworkSettingsDialog::on_acceptNetworkButton_clicked()
 {
-    emit newIPAddress( ui->ipaddressLineEdit->text() );
+    if(ui->portLineEdit->text()!="DEFAULT"){
+        ui->portLineEdit->setInputMask("00000");
+    }
     emit updateLog( "IP is now: " + ui->ipaddressLineEdit->text() );
-    emit newSubnetMask( ui->submaskLineEdit->text() );
     emit updateLog( "Subnetmask is now: " + ui->submaskLineEdit->text() );
-    emit newPortNumber( ui->portLineEdit->text() );
     emit updateLog( "Portnumber is now: " + ui->portLineEdit->text() );
-    emit processedAllChanges();
+    emit updateLog( "Username is now: " + ui->userNameLineEdit->text());
+    emit updateLog( "Password is now: " + ui->passWordLineEdit->text());
+
+    if(settings->setNetworkSettings( ui->ipaddressLineEdit->text(),
+                                      ui->submaskLineEdit->text(),
+                                      ui->portLineEdit->text(),
+                                      ui->userNameLineEdit->text(),
+                                      ui->passWordLineEdit->text()) )
+    {
+        emit processedAllChanges();
+    }
+
 }
 
 void NetworkSettingsDialog::on_cancelNetworkButton_clicked()
